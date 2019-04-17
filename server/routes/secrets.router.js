@@ -4,15 +4,13 @@ const router = express.Router();
 const { rejectUnauthenticated } = require('../modules/authentication-middleware');
 
 
-// Handles Ajax request for user information if user is authenticated
-router.get('/', rejectUnauthenticated, (req, res) => {
-    // Send back user object from the session (previously queried from the database)
-    res.send(req.user);
-  });
 
-router.get('/', (req, res) => {
+router.get('/', rejectUnauthenticated, (req, res) => {
     console.log('req.user:', req.user);
-    pool.query('SELECT * FROM "secret";')
+     console.log(req.user.clearance_level);
+     let clearance_level = req.user.clearance_level;
+    
+    pool.query(`SELECT "content" FROM "secret" WHERE "secrecy_level" <= ${clearance_level};`)
         .then(results => res.send(results.rows))
         .catch(error => {
             console.log('Error making SELECT for secrets:', error);
